@@ -1,7 +1,7 @@
 'use client';
 import React, { useState, useRef, useEffect } from 'react';
 import { SendHorizonal } from 'lucide-react';
-import BASE_URL from '../api/route';
+import BASE_URL from '../apiBaseUrl';
 
 const TypingIndicator = () => {
   return (
@@ -43,7 +43,7 @@ export default function ChatInterface() {
     setIsTyping(true); // Show typing indicator
     
     try {
-      const res = await fetch(`${BASE_URL}`, {
+      const res = await fetch(`${BASE_URL}/simplify-question`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ question: input }),
