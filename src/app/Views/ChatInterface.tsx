@@ -45,18 +45,6 @@ export default function ChatInterface() {
   }, [messages, isTyping]);
 
   // Function to check session status (for debugging)
-  const checkSessionStatus = async () => {
-    try {
-      const response = await fetch(`${BASE_URL}/session-status`, {
-        method: 'GET',
-        credentials: 'include', // Include cookies for session
-      });
-      const status = await response.json();
-      console.log('Session Status:', status);
-    } catch (error) {
-      console.error('Error checking session status:', error);
-    }
-  };
 
   const sendMessage = async () => {
     if (!input.trim()) return;
@@ -202,13 +190,7 @@ export default function ChatInterface() {
           )}
         </div>
         
-        {/* Debug button - remove in production */}
-        <button 
-          onClick={checkSessionStatus}
-          className="text-xs bg-gray-200 px-2 py-1 rounded hover:bg-gray-300 self-start"
-        >
-          🐛 Check Session (Debug)
-        </button>
+        
         
         <div className="bg-white p-4 rounded-xl shadow-md flex-1 h-[500px] overflow-y-auto space-y-2 border">
           {messages.length === 0 && (
