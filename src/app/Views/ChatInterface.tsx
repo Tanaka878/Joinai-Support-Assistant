@@ -100,7 +100,7 @@ export default function ChatInterface() {
           }
           
           // Handle different response types
-          let messageText = botReply.message;
+          const messageText = botReply.message;
           let messageType = '';
           
           switch (botReply.type) {
@@ -213,7 +213,7 @@ export default function ChatInterface() {
         <div className="bg-white p-4 rounded-xl shadow-md flex-1 h-[500px] overflow-y-auto space-y-2 border">
           {messages.length === 0 && (
             <div className="text-center text-gray-500 text-sm mt-8">
-              👋 Hello! I'm here to help you with questions about JoinAI. How can I assist you today?
+              👋 Hello! I&apos;m here to help you with questions about JoinAI. How can I assist you today?
             </div>
           )}
           
@@ -260,7 +260,7 @@ export default function ChatInterface() {
         
         {isWaitingForEmail && (
           <div className="text-xs text-blue-600 text-center bg-blue-50 p-2 rounded">
-            💡 Tip: Just type your email address (e.g., "user@example.com") and send it
+            💡 Tip: Just type your email address (e.g., &quot;user@example.com&quot;) and send it
           </div>
         )}
       </div>
