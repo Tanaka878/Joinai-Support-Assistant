@@ -32,7 +32,6 @@ export default function ChatInterface() {
   const [messages, setMessages] = useState<{ sender: 'user' | 'bot'; text: string; type?: string }[]>([]);
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
-  const [sessionId, setSessionId] = useState<string | null>(null);
   const [isWaitingForEmail, setIsWaitingForEmail] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -82,10 +81,7 @@ export default function ChatInterface() {
         if (contentType && contentType.includes('application/json')) {
           botReply = await response.json() as ApiResponse;
           
-          // Store session ID for debugging
-          if (botReply.sessionId) {
-            setSessionId(botReply.sessionId);
-          }
+          
           
           // Handle different response types
           const messageText = botReply.message;
@@ -183,11 +179,7 @@ export default function ChatInterface() {
       <div className="w-full max-w-2xl flex flex-col gap-3 mt-6">
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-bold text-center text-gray-800">🤖 JoinAI Support Assistant</h1>
-          {sessionId && (
-            <div className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">
-              Session: {sessionId.substring(0, 8)}...
-            </div>
-          )}
+          
         </div>
         
         
