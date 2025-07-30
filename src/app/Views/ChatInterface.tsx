@@ -1,6 +1,7 @@
 'use client';
 import React, { useState, useRef, useEffect } from 'react';
-import { SendHorizonal } from 'lucide-react';
+import { SendHorizonal, Moon, Sun } from 'lucide-react';
+
 import BASE_URL from '../apiBaseUrl';
 
 interface ApiResponse {
@@ -11,17 +12,29 @@ interface ApiResponse {
   warning?: string;
 }
 
-const TypingIndicator = () => {
+const TypingIndicator = ({ isDarkMode }: { isDarkMode: boolean }) => {
   return (
-    <div className="flex justify-start mb-2">
-      <div className="max-w-xs p-3 rounded-lg text-sm bg-gray-200 text-gray-900">
+    <div className="flex justify-start mb-2 px-4">
+      <div className={`max-w-xs p-3 rounded-lg text-sm ${
+        isDarkMode 
+          ? 'bg-gray-700 text-gray-200' 
+          : 'bg-gray-200 text-gray-900'
+      }`}>
         <div className="flex items-center space-x-2">
           <div className="flex space-x-1">
-            <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
-            <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-            <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+            <div className={`w-2 h-2 rounded-full animate-bounce ${
+              isDarkMode ? 'bg-gray-400' : 'bg-gray-400'
+            }`}></div>
+            <div className={`w-2 h-2 rounded-full animate-bounce ${
+              isDarkMode ? 'bg-gray-400' : 'bg-gray-400'
+            }`} style={{ animationDelay: '0.1s' }}></div>
+            <div className={`w-2 h-2 rounded-full animate-bounce ${
+              isDarkMode ? 'bg-gray-400' : 'bg-gray-400'
+            }`} style={{ animationDelay: '0.2s' }}></div>
           </div>
-          <span className="text-gray-500 text-xs">Assistant is typing...</span>
+          <span className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+            Assistant is typing...
+          </span>
         </div>
       </div>
     </div>
@@ -33,6 +46,7 @@ export default function ChatInterface() {
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const [isWaitingForEmail, setIsWaitingForEmail] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
@@ -42,8 +56,6 @@ export default function ChatInterface() {
   useEffect(() => {
     scrollToBottom();
   }, [messages, isTyping]);
-
-  // Function to check session status (for debugging)
 
   const sendMessage = async () => {
     if (!input.trim()) return;
@@ -64,26 +76,22 @@ export default function ChatInterface() {
         headers: { 
           'Content-Type': 'application/json',
         },
-        credentials: 'include', // This is crucial for maintaining sessions
+        credentials: 'include',
         body: JSON.stringify({ 
           question: currentInput,
-          email: null // Let the backend handle email extraction from the question
+          email: null
         }),
       });
 
       setIsTyping(false);
 
       if (response.ok) {
-        // Try to parse as JSON first (new format)
         const contentType = response.headers.get('content-type');
         let botReply: ApiResponse | string;
         
         if (contentType && contentType.includes('application/json')) {
           botReply = await response.json() as ApiResponse;
           
-          
-          
-          // Handle different response types
           const messageText = botReply.message;
           let messageType = '';
           
@@ -120,7 +128,6 @@ export default function ChatInterface() {
           }]);
           
         } else {
-          // Fallback for plain text response (old format)
           botReply = await response.text();
           setMessages(prev => [...prev, { 
             sender: 'bot', 
@@ -156,92 +163,153 @@ export default function ChatInterface() {
   // Helper function to get message styling based on type
   const getMessageStyling = (msg: { sender: 'user' | 'bot'; text: string; type?: string }) => {
     if (msg.sender === 'user') {
-      return 'bg-blue-600 text-white';
+      return isDarkMode 
+        ? 'bg-blue-600 text-white rounded-tl-2xl rounded-tr-2xl rounded-bl-2xl rounded-br-md'
+        : 'bg-blue-500 text-white rounded-tl-2xl rounded-tr-2xl rounded-bl-2xl rounded-br-md';
     }
     
     // Bot message styling based on type
-    switch (msg.type) {
-      case 'success':
-        return 'bg-green-100 text-green-800 border border-green-200';
-      case 'warning':
-        return 'bg-yellow-100 text-yellow-800 border border-yellow-200';
-      case 'error':
-        return 'bg-red-100 text-red-800 border border-red-200';
-      case 'email_required':
-        return 'bg-blue-100 text-blue-800 border border-blue-200';
-      default:
-        return 'bg-gray-200 text-gray-900';
+    const baseStyle = 'rounded-tl-2xl rounded-tr-2xl rounded-br-2xl rounded-bl-md';
+    
+    if (isDarkMode) {
+      switch (msg.type) {
+        case 'success':
+          return `bg-green-900 text-green-200 border border-green-700 ${baseStyle}`;
+        case 'warning':
+          return `bg-yellow-900 text-yellow-200 border border-yellow-700 ${baseStyle}`;
+        case 'error':
+          return `bg-red-900 text-red-200 border border-red-700 ${baseStyle}`;
+        case 'email_required':
+          return `bg-blue-900 text-blue-200 border border-blue-700 ${baseStyle}`;
+        default:
+          return `bg-gray-700 text-gray-200 ${baseStyle}`;
+      }
+    } else {
+      switch (msg.type) {
+        case 'success':
+          return `bg-green-100 text-green-800 border border-green-200 ${baseStyle}`;
+        case 'warning':
+          return `bg-yellow-100 text-yellow-800 border border-yellow-200 ${baseStyle}`;
+        case 'error':
+          return `bg-red-100 text-red-800 border border-red-200 ${baseStyle}`;
+        case 'email_required':
+          return `bg-blue-100 text-blue-800 border border-blue-200 ${baseStyle}`;
+        default:
+          return `bg-gray-200 text-gray-900 ${baseStyle}`;
+      }
     }
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-between p-4">
-      <div className="w-full max-w-2xl flex flex-col gap-3 mt-6">
-        <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold text-center text-gray-800">🤖 JoinAI Support Assistant</h1>
-          
-        </div>
-        
-        
-        
-        <div className="bg-white p-4 rounded-xl shadow-md flex-1 h-[500px] overflow-y-auto space-y-2 border">
+    <div className={`h-screen flex flex-col ${
+      isDarkMode ? 'bg-gray-900' : 'bg-gray-100'
+    }`}>
+      {/* Header */}
+      <div className={`border-b px-4 py-4 flex items-center justify-between shadow-sm ${
+        isDarkMode 
+          ? 'bg-gray-800 border-gray-700' 
+          : 'bg-white border-gray-200'
+      }`}>
+        <div></div>
+        <h1 className={`text-xl font-semibold ${
+          isDarkMode ? 'text-gray-100' : 'text-gray-800'
+        }`}>
+          🤖 JoinAI Support
+        </h1>
+        <button
+          onClick={() => setIsDarkMode(!isDarkMode)}
+          className={`p-2 rounded-full transition-colors duration-200 ${
+            isDarkMode 
+              ? 'hover:bg-gray-700 text-gray-300' 
+              : 'hover:bg-gray-100 text-gray-600'
+          }`}
+        >
+          {isDarkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+        </button>
+      </div>
+      
+      {/* Messages Container */}
+      <div className="flex-1 overflow-y-auto bg-gray-50">
+        <div className="py-4">
           {messages.length === 0 && (
-            <div className="text-center text-gray-500 text-sm mt-8">
-              👋 Hello! I&apos;m here to help you with questions about JoinAI. How can I assist you today?
+            <div className="text-center text-gray-500 text-sm px-4 py-8">
+              <div className="bg-white rounded-lg p-6 mx-4 shadow-sm">
+                👋 Hello! I&apos;m here to help you with questions about JoinAI. How can I assist you today?
+              </div>
             </div>
           )}
           
           {messages.map((msg, index) => (
             <div
               key={index}
-              className={`flex ${
+              className={`flex px-4 mb-3 ${
                 msg.sender === 'user' ? 'justify-end' : 'justify-start'
               }`}
             >
               <div
-                className={`max-w-xs p-3 rounded-lg text-sm whitespace-pre-wrap ${getMessageStyling(msg)}`}
+                className={`max-w-xs lg:max-w-md p-3 text-sm whitespace-pre-wrap shadow-sm ${getMessageStyling(msg)}`}
               >
                 {msg.text}
               </div>
             </div>
           ))}
-          {isTyping && <TypingIndicator />}
+          
+          {isTyping && <TypingIndicator isDarkMode={isDarkMode} />}
           <div ref={messagesEndRef} />
         </div>
+      </div>
+      
+      {/* Input Area - Sticky at bottom */}
+      <div className="bg-white border-t border-gray-200 p-4">
+        {isWaitingForEmail && (
+          <div className="text-xs text-blue-600 text-center bg-blue-50 p-2 rounded-lg mb-3">
+            💡 Tip: Just type your email address (e.g., &quot;user@example.com&quot;) and send it
+          </div>
+        )}
         
-        <div className="flex items-center gap-2">
-          <input
-            type="text"
-            className="text-black flex-1 px-4 py-2 border rounded-full focus:outline-none focus:ring-2 focus:ring-blue-400"
-            placeholder={
-              isWaitingForEmail 
-                ? "Please provide your email address..." 
-                : "Ask your question..."
-            }
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyDown={handleKeyPress}
-            disabled={isTyping}
-          />
+        <div className="flex items-end gap-3">
+          <div className="flex-1 relative">
+            <textarea
+              className="w-full px-4 py-3 bg-gray-100 rounded-3xl resize-none focus:outline-none focus:ring-2 focus:ring-blue-400 focus:bg-white text-gray-800 placeholder-gray-500 min-h-[44px] max-h-32"
+              placeholder={
+                isWaitingForEmail 
+                  ? "Please provide your email address..." 
+                  : "Type a message..."
+              }
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyDown={handleKeyPress}
+              disabled={isTyping}
+              rows={1}
+              style={{
+                height: 'auto',
+                minHeight: '44px'
+              }}
+              onInput={(e) => {
+                const target = e.target as HTMLTextAreaElement;
+                target.style.height = 'auto';
+                target.style.height = Math.min(target.scrollHeight, 128) + 'px';
+              }}
+            />
+          </div>
           <button
             onClick={sendMessage}
             disabled={isTyping || !input.trim()}
-            className="bg-blue-600 text-white p-2 rounded-full hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="bg-blue-500 text-white p-3 rounded-full hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200 flex-shrink-0"
           >
             <SendHorizonal className="w-5 h-5" />
           </button>
         </div>
-        
-        {isWaitingForEmail && (
-          <div className="text-xs text-blue-600 text-center bg-blue-50 p-2 rounded">
-            💡 Tip: Just type your email address (e.g., &quot;user@example.com&quot;) and send it
-          </div>
-        )}
       </div>
       
-      <footer className="text-xs text-gray-500 mt-4 mb-2">
+      {/* Footer */}
+      <div className={`text-xs text-center py-2 ${
+        isDarkMode 
+          ? 'bg-gray-800 text-gray-400' 
+          : 'bg-gray-50 text-gray-500'
+      }`}>
         Powered by JoinAI • © {new Date().getFullYear()}
-      </footer>
+      </div>
     </div>
   );
 }
