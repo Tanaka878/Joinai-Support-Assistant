@@ -1,8 +1,10 @@
 'use client';
 import React, { useState, useRef, useEffect } from 'react';
 import { SendHorizonal, Moon, Sun } from 'lucide-react';
-
 import BASE_URL from '../apiBaseUrl';
+
+
+
 
 interface ApiResponse {
   message: string;
@@ -14,25 +16,25 @@ interface ApiResponse {
 
 const TypingIndicator = ({ isDarkMode }: { isDarkMode: boolean }) => {
   return (
-    <div className="flex justify-start mb-2 px-4">
-      <div className={`max-w-xs p-3 rounded-lg text-sm ${
+    <div className="flex justify-start mb-4 px-6">
+      <div className={`max-w-xs p-4 rounded-2xl text-sm shadow-sm ${
         isDarkMode 
-          ? 'bg-gray-700 text-gray-200' 
-          : 'bg-gray-200 text-gray-900'
+          ? 'bg-gray-800/70 text-gray-300 border border-gray-700/50' 
+          : 'bg-white text-gray-700 border border-gray-200'
       }`}>
-        <div className="flex items-center space-x-2">
-          <div className="flex space-x-1">
+        <div className="flex items-center space-x-3">
+          <div className="flex space-x-1.5">
             <div className={`w-2 h-2 rounded-full animate-bounce ${
-              isDarkMode ? 'bg-gray-400' : 'bg-gray-400'
+              isDarkMode ? 'bg-blue-400' : 'bg-blue-500'
             }`}></div>
             <div className={`w-2 h-2 rounded-full animate-bounce ${
-              isDarkMode ? 'bg-gray-400' : 'bg-gray-400'
-            }`} style={{ animationDelay: '0.1s' }}></div>
+              isDarkMode ? 'bg-blue-400' : 'bg-blue-500'
+            }`} style={{ animationDelay: '0.15s' }}></div>
             <div className={`w-2 h-2 rounded-full animate-bounce ${
-              isDarkMode ? 'bg-gray-400' : 'bg-gray-400'
-            }`} style={{ animationDelay: '0.2s' }}></div>
+              isDarkMode ? 'bg-blue-400' : 'bg-blue-500'
+            }`} style={{ animationDelay: '0.3s' }}></div>
           </div>
-          <span className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+          <span className={`text-xs font-medium ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
             Assistant is typing...
           </span>
         </div>
@@ -69,6 +71,9 @@ export default function ChatInterface() {
     const currentInput = input;
     setInput('');
     setIsTyping(true);
+    
+  
+    
     
     try {
       const response = await fetch(`${BASE_URL}/simplify-question`, {
@@ -151,6 +156,7 @@ export default function ChatInterface() {
         },
       ]);
     }
+    
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -164,64 +170,73 @@ export default function ChatInterface() {
   const getMessageStyling = (msg: { sender: 'user' | 'bot'; text: string; type?: string }) => {
     if (msg.sender === 'user') {
       return isDarkMode 
-        ? 'bg-blue-600 text-white rounded-tl-2xl rounded-tr-2xl rounded-bl-2xl rounded-br-md'
-        : 'bg-blue-500 text-white rounded-tl-2xl rounded-tr-2xl rounded-bl-2xl rounded-br-md';
+        ? 'bg-gradient-to-br from-blue-600 to-blue-700 text-white shadow-lg border border-blue-500/20'
+        : 'bg-gradient-to-br from-blue-500 to-blue-600 text-white shadow-lg';
     }
     
     // Bot message styling based on type
-    const baseStyle = 'rounded-tl-2xl rounded-tr-2xl rounded-br-2xl rounded-bl-md';
+    const baseClasses = 'shadow-sm border';
     
     if (isDarkMode) {
       switch (msg.type) {
         case 'success':
-          return `bg-green-900 text-green-200 border border-green-700 ${baseStyle}`;
+          return `bg-gray-800/70 text-gray-200 border-gray-700/50 ${baseClasses}`;
         case 'warning':
-          return `bg-yellow-900 text-yellow-200 border border-yellow-700 ${baseStyle}`;
+          return `bg-amber-900/30 text-amber-200 border-amber-700/50 ${baseClasses}`;
         case 'error':
-          return `bg-red-900 text-red-200 border border-red-700 ${baseStyle}`;
+          return `bg-red-900/30 text-red-200 border-red-700/50 ${baseClasses}`;
         case 'email_required':
-          return `bg-blue-900 text-blue-200 border border-blue-700 ${baseStyle}`;
+          return `bg-blue-900/30 text-blue-200 border-blue-700/50 ${baseClasses}`;
         default:
-          return `bg-gray-700 text-gray-200 ${baseStyle}`;
+          return `bg-gray-800/70 text-gray-200 border-gray-700/50 ${baseClasses}`;
       }
     } else {
       switch (msg.type) {
         case 'success':
-          return `bg-green-100 text-green-800 border border-green-200 ${baseStyle}`;
+          return `bg-white text-gray-800 border-gray-200 ${baseClasses}`;
         case 'warning':
-          return `bg-yellow-100 text-yellow-800 border border-yellow-200 ${baseStyle}`;
+          return `bg-amber-50 text-amber-800 border-amber-200 ${baseClasses}`;
         case 'error':
-          return `bg-red-100 text-red-800 border border-red-200 ${baseStyle}`;
+          return `bg-red-50 text-red-800 border-red-200 ${baseClasses}`;
         case 'email_required':
-          return `bg-blue-100 text-blue-800 border border-blue-200 ${baseStyle}`;
+          return `bg-blue-50 text-blue-800 border-blue-200 ${baseClasses}`;
         default:
-          return `bg-gray-200 text-gray-900 ${baseStyle}`;
+          return `bg-white text-gray-800 border-gray-200 ${baseClasses}`;
       }
     }
   };
 
   return (
-    <div className={`h-screen flex flex-col ${
-      isDarkMode ? 'bg-gray-900' : 'bg-gray-100'
+    <div className={`h-screen flex flex-col transition-colors duration-300 ${
+      isDarkMode 
+        ? 'bg-gradient-to-br from-gray-900 via-gray-900 to-gray-800' 
+        : 'bg-gradient-to-br from-gray-50 to-gray-100'
     }`}>
       {/* Header */}
-      <div className={`border-b px-4 py-4 flex items-center justify-between shadow-sm ${
+      <div className={`border-b px-6 py-4 flex items-center justify-between backdrop-blur-sm ${
         isDarkMode 
-          ? 'bg-gray-800 border-gray-700' 
-          : 'bg-white border-gray-200'
+          ? 'bg-gray-900/90 border-gray-700/50 shadow-lg' 
+          : 'bg-white/90 border-gray-200 shadow-sm'
       }`}>
-        <div></div>
-        <h1 className={`text-xl font-semibold ${
-          isDarkMode ? 'text-gray-100' : 'text-gray-800'
-        }`}>
-          🤖 JoinAI Support
-        </h1>
+        <div className="w-10"></div>
+        <div className="flex items-center space-x-3">
+          <div className={`w-8 h-8 rounded-full flex items-center justify-center text-lg ${
+            isDarkMode ? 'bg-blue-600' : 'bg-blue-500'
+          }`}>
+            🤖
+          </div>
+          <h1 className={`text-xl font-semibold tracking-tight ${
+            isDarkMode ? 'text-gray-100' : 'text-gray-800'
+          }`}>
+            JoinAI Support
+          </h1>
+        </div>
         <button
           onClick={() => setIsDarkMode(!isDarkMode)}
-          className={`p-2 rounded-full transition-colors duration-200 ${
+          className={`p-2.5 rounded-xl transition-all duration-200 ${
             isDarkMode 
-              ? 'hover:bg-gray-700 text-gray-300' 
-              : 'hover:bg-gray-100 text-gray-600'
+              ? 'hover:bg-gray-800 text-gray-300 hover:text-gray-100 bg-gray-800/50' 
+              : 'hover:bg-gray-100 text-gray-600 hover:text-gray-800 bg-gray-50'
           }`}
         >
           {isDarkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
@@ -229,12 +244,26 @@ export default function ChatInterface() {
       </div>
       
       {/* Messages Container */}
-      <div className="flex-1 overflow-y-auto bg-gray-50">
-        <div className="py-4">
+      <div className={`flex-1 overflow-y-auto ${
+        isDarkMode ? 'bg-transparent' : 'bg-transparent'
+      }`}>
+        <div className="py-6">
           {messages.length === 0 && (
-            <div className="text-center text-gray-500 text-sm px-4 py-8">
-              <div className="bg-white rounded-lg p-6 mx-4 shadow-sm">
-                👋 Hello! I&apos;m here to help you with questions about JoinAI. How can I assist you today?
+            <div className="text-center px-6 py-12">
+              <div className={`rounded-2xl p-8 mx-4 max-w-md mx-auto shadow-sm border ${
+                isDarkMode 
+                  ? 'bg-gray-800/70 border-gray-700/50 text-gray-300' 
+                  : 'bg-white border-gray-200 text-gray-700'
+              }`}>
+                <div className="text-4xl mb-4">👋</div>
+                <h3 className={`text-lg font-medium mb-2 ${
+                  isDarkMode ? 'text-gray-200' : 'text-gray-800'
+                }`}>
+                  Welcome to JoinAI Support
+                </h3>
+                <p className="text-sm leading-relaxed">
+                  I'm here to help you with questions about JoinAI. How can I assist you today?
+                </p>
               </div>
             </div>
           )}
@@ -242,12 +271,16 @@ export default function ChatInterface() {
           {messages.map((msg, index) => (
             <div
               key={index}
-              className={`flex px-4 mb-3 ${
+              className={`flex px-6 mb-4 ${
                 msg.sender === 'user' ? 'justify-end' : 'justify-start'
               }`}
             >
               <div
-                className={`max-w-xs lg:max-w-md p-3 text-sm whitespace-pre-wrap shadow-sm ${getMessageStyling(msg)}`}
+                className={`max-w-xs lg:max-w-md p-4 text-sm leading-relaxed whitespace-pre-wrap rounded-2xl ${
+                  msg.sender === 'user' 
+                    ? 'rounded-br-lg' 
+                    : 'rounded-bl-lg'
+                } ${getMessageStyling(msg)}`}
               >
                 {msg.text}
               </div>
@@ -260,21 +293,33 @@ export default function ChatInterface() {
       </div>
       
       {/* Input Area - Sticky at bottom */}
-      <div className="bg-white border-t border-gray-200 p-4">
+      <div className={`border-t px-6 py-4 backdrop-blur-sm ${
+        isDarkMode 
+          ? 'bg-gray-900/90 border-gray-700/50' 
+          : 'bg-white/90 border-gray-200'
+      }`}>
         {isWaitingForEmail && (
-          <div className="text-xs text-blue-600 text-center bg-blue-50 p-2 rounded-lg mb-3">
-            💡 Tip: Just type your email address (e.g., &quot;user@example.com&quot;) and send it
+          <div className={`text-xs text-center p-3 rounded-xl mb-4 border ${
+            isDarkMode 
+              ? 'text-blue-300 bg-blue-900/30 border-blue-700/50' 
+              : 'text-blue-700 bg-blue-50 border-blue-200'
+          }`}>
+            💡 <span className="font-medium">Tip:</span> Just type your email address (e.g., "user@example.com") and send it
           </div>
         )}
         
-        <div className="flex items-end gap-3">
+        <div className="flex items-end gap-3 max-w-4xl mx-auto">
           <div className="flex-1 relative">
             <textarea
-              className="w-full px-4 py-3 bg-gray-100 rounded-3xl resize-none focus:outline-none focus:ring-2 focus:ring-blue-400 focus:bg-white text-gray-800 placeholder-gray-500 min-h-[44px] max-h-32"
+              className={`w-full px-5 py-4 rounded-2xl resize-none focus:outline-none focus:ring-2 transition-all duration-200 text-sm placeholder-opacity-70 min-h-[52px] max-h-32 ${
+                isDarkMode 
+                  ? 'bg-gray-800 text-gray-100 placeholder-gray-400 focus:ring-blue-500 focus:bg-gray-750 border border-gray-700' 
+                  : 'bg-gray-100 text-gray-800 placeholder-gray-500 focus:ring-blue-400 focus:bg-white border border-gray-200 focus:border-blue-300'
+              }`}
               placeholder={
                 isWaitingForEmail 
                   ? "Please provide your email address..." 
-                  : "Type a message..."
+                  : "Type your message..."
               }
               value={input}
               onChange={(e) => setInput(e.target.value)}
@@ -283,7 +328,7 @@ export default function ChatInterface() {
               rows={1}
               style={{
                 height: 'auto',
-                minHeight: '44px'
+                minHeight: '52px'
               }}
               onInput={(e) => {
                 const target = e.target as HTMLTextAreaElement;
@@ -295,7 +340,15 @@ export default function ChatInterface() {
           <button
             onClick={sendMessage}
             disabled={isTyping || !input.trim()}
-            className="bg-blue-500 text-white p-3 rounded-full hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200 flex-shrink-0"
+            className={`p-3.5 rounded-2xl transition-all duration-200 flex-shrink-0 shadow-sm ${
+              isTyping || !input.trim()
+                ? isDarkMode 
+                  ? 'bg-gray-700 text-gray-500 cursor-not-allowed' 
+                  : 'bg-gray-300 text-gray-400 cursor-not-allowed'
+                : isDarkMode
+                  ? 'bg-blue-600 text-white hover:bg-blue-700 hover:shadow-lg transform hover:scale-105'
+                  : 'bg-blue-500 text-white hover:bg-blue-600 hover:shadow-lg transform hover:scale-105'
+            }`}
           >
             <SendHorizonal className="w-5 h-5" />
           </button>
@@ -303,12 +356,12 @@ export default function ChatInterface() {
       </div>
       
       {/* Footer */}
-      <div className={`text-xs text-center py-2 ${
+      <div className={`text-xs text-center py-3 ${
         isDarkMode 
-          ? 'bg-gray-800 text-gray-400' 
-          : 'bg-gray-50 text-gray-500'
+          ? 'bg-gray-900/50 text-gray-500' 
+          : 'bg-gray-50/80 text-gray-400'
       }`}>
-        Powered by JoinAI • © {new Date().getFullYear()}
+        <span className="font-medium">Powered by JoinAI</span> • © {new Date().getFullYear()}
       </div>
     </div>
   );
