@@ -262,7 +262,7 @@ export default function ChatInterface() {
                   Welcome to JoinAI Support
                 </h3>
                 <p className="text-sm leading-relaxed">
-                  I'm here to help you with questions about JoinAI. How can I assist you today?
+                  I&apos;m here to help you with questions about JoinAI. How can I assist you today?
                 </p>
               </div>
             </div>
@@ -304,7 +304,7 @@ export default function ChatInterface() {
               ? 'text-blue-300 bg-blue-900/30 border-blue-700/50' 
               : 'text-blue-700 bg-blue-50 border-blue-200'
           }`}>
-            💡 <span className="font-medium">Tip:</span> Just type your email address (e.g., "user@example.com") and send it
+            💡 <span className="font-medium">Tip:</span> Just type your email address (e.g., &quot;user@example.com&quot;) and send it
           </div>
         )}
         
